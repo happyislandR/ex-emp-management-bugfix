@@ -24,9 +24,17 @@ public class AdministratorService {
 	 * 管理者情報を登録します.
 	 * 
 	 * @param administrator 管理者情報
+	 * @return 0 メールアドレス重複エラー
+	 *         1 管理者情報の登録成功
 	 */
-	public void insert(Administrator administrator) {
+	public int insert(Administrator administrator) {
+
+		if(administratorRepository.findByMailAddress(administrator.getMailAddress()) != null) {
+			return 0;
+		}
+
 		administratorRepository.insert(administrator);
+		return 1;
 	}
 	
 	/**
