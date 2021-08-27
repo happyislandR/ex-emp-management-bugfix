@@ -78,23 +78,23 @@ public class AdministratorController {
 			@Validated InsertAdministratorForm form
 			, BindingResult result) {
 
+		Administrator administrator = new Administrator();
+		// フォームからドメインにプロパティ値をコピー
+		BeanUtils.copyProperties(form, administrator);
+
+		// メールアドレスが重複していた時に、resultにエラーメッセージを追加する
+		if(administratorService.hasMailAddress(administrator.getMailAddress()) == 0 && administrator.getMailAddress() != "") {
+			System.out.println("中身は" + administrator.getMailAddress() + "です");
+			FieldError fieldError = new FieldError(result.getObjectName(), "mailAddress", "既にメールアドレスは登録されています");
+			result.addError(fieldError);
+		}
+
 		// エラーが一つでもあった場合は入力画面に遷移
 		if(result.hasErrors()) {
 			return toInsert();
 		}
 
-		Administrator administrator = new Administrator();
-		// フォームからドメインにプロパティ値をコピー
-		BeanUtils.copyProperties(form, administrator);
-		int insertResult = administratorService.insert(administrator);
-
-		// メールアドレスが重複していた時に、resultにエラーメッセージを追加する
-		if(insertResult == 0) {
-			FieldError fieldError = new FieldError(result.getObjectName(), "mailAddress", "既にメールアドレスは登録されています");
-			result.addError(fieldError);
-			return toInsert();
-		}
-
+		administratorService.insert(administrator);
 		return "redirect:/";
 	}
 

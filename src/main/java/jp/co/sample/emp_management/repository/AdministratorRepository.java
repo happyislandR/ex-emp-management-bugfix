@@ -80,7 +80,7 @@ public class AdministratorRepository {
 
 	/**
 	 * メールアドレスから管理者情報を取得します.
-	 * 
+	 *
 	 * @param mailAddress メールアドレス
 	 * @return 管理者情報 存在しない場合はnullを返します
 	 */
