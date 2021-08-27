@@ -78,20 +78,29 @@ public class AdministratorController {
 			@Validated InsertAdministratorForm form
 			, BindingResult result) {
 
+
+		Administrator administrator = new Administrator();
+		// フォームからドメインにプロパティ値をコピー
+		BeanUtils.copyProperties(form, administrator);
+
+		// メールアドレスが重複していた時に、resultにエラーメッセージを追加する
+		Administrator existAdministrator = administratorService.hasMailAddress(form.getMailAddress());
+		if(existAdministrator != null){
+			result.rejectValue("mailAddress", "", "そのメールアドレスは既に登録されています");
+			}
+
 		// パスワード欄と再入力パスワード欄の値が異なっていた場合、エラーを表示
 		if(!(form.getPassword().equals(form.getConfirmPassword()))) {
 			FieldError fieldError = new FieldError(result.getObjectName(), "confirmPassword", "入力されたパスワードが誤っています");
 			result.addError(fieldError);
 		}
 
+
 		// エラーが一つでもあった場合は入力画面に遷移
 		if(result.hasErrors()) {
 			return toInsert();
 		}
 
-		Administrator administrator = new Administrator();
-		// フォームからドメインにプロパティ値をコピー
-		BeanUtils.copyProperties(form, administrator);
 		administratorService.insert(administrator);
 		return "redirect:/";
 	}

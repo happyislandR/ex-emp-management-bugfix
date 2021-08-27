@@ -39,4 +39,15 @@ public class AdministratorService {
 		Administrator administrator = administratorRepository.findByMailAddressAndPassward(mailAddress, password);
 		return administrator;
 	}
+
+	/**
+	 * メールアドレスが登録されているか検索します.
+	 *
+	 * @param mailAddress メールアドレス
+	 * @return 0 メールアドレス重複エラー
+	 *         1 管理者情報の登録成功
+	 */
+	public Administrator hasMailAddress(String mailAddress) {
+		return administratorRepository.findByMailAddress(mailAddress);
+	}
 }
