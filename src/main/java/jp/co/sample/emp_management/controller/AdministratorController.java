@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,11 +82,10 @@ public class AdministratorController {
 		BeanUtils.copyProperties(form, administrator);
 
 		// メールアドレスが重複していた時に、resultにエラーメッセージを追加する
-		if(administratorService.hasMailAddress(administrator.getMailAddress()) == 0 && administrator.getMailAddress() != "") {
-			System.out.println("中身は" + administrator.getMailAddress() + "です");
-			FieldError fieldError = new FieldError(result.getObjectName(), "mailAddress", "既にメールアドレスは登録されています");
-			result.addError(fieldError);
-		}
+		Administrator existAdministrator = administratorService.hasMailAddress(form.getMailAddress());
+		if(existAdministrator != null){
+			result.rejectValue("mailAddress", "", "そのメールアドレスは既に登録されています");
+			}
 
 		// エラーが一つでもあった場合は入力画面に遷移
 		if(result.hasErrors()) {

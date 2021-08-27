@@ -47,10 +47,7 @@ public class AdministratorService {
 	 * @return 0 メールアドレス重複エラー
 	 *         1 管理者情報の登録成功
 	 */
-	public int hasMailAddress(String mailAddress) {
-		if(administratorRepository.findByMailAddress(mailAddress) != null) {
-			return 0;
-		}
-		return 1;
+	public Administrator hasMailAddress(String mailAddress) {
+		return administratorRepository.findByMailAddress(mailAddress);
 	}
 }
