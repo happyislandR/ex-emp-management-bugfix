@@ -79,7 +79,7 @@ public class AdministratorController {
 			, BindingResult result) {
 
 		// パスワード欄と再入力パスワード欄の値が異なっていた場合、エラーを表示
-		if(form.getPassword() != form.getConfirmPassword()) {
+		if(!(form.getPassword().equals(form.getConfirmPassword()))) {
 			FieldError fieldError = new FieldError(result.getObjectName(), "confirmPassword", "入力されたパスワードが誤っています");
 			result.addError(fieldError);
 		}
