@@ -126,12 +126,15 @@ public class AdministratorController {
 			return toLogin();
 		}
 
+
 		// パスワードチェック
 		if(!(passwordEncoder.matches(form.getPassword(), administrator.getPassword()))) {
 			model.addAttribute("errorMessage", "メールアドレスまたはパスワードが不正です。");
 			return toLogin();
 		}
 		System.out.println(administrator.getPassword());
+
+		session.setAttribute("administratorName", administrator.getName());
 
 		return "forward:/employee/showList";
 	}
