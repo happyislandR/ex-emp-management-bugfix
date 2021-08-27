@@ -90,8 +90,6 @@ public class AdministratorController {
 		// フォームからドメインにプロパティ値をコピー
 		BeanUtils.copyProperties(form, administrator);
 		// パスワードをハッシュ化
-		String hash = administratorService.changeHash(administrator.getPassword());
-		administrator.setPassword(hash);
 		administratorService.insert(administrator);
 		return "redirect:/";
 	}
