@@ -4,6 +4,9 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,6 +34,14 @@ public class AdministratorController {
 	
 	@Autowired
 	private HttpSession session;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
 	/**
 	 * 使用するフォームオブジェクトをリクエストスコープに格納する.
@@ -85,6 +96,9 @@ public class AdministratorController {
 		Administrator administrator = new Administrator();
 		// フォームからドメインにプロパティ値をコピー
 		BeanUtils.copyProperties(form, administrator);
+		// パスワードをハッシュ化
+		String hash = passwordEncoder.encode(administrator.getPassword());
+		administrator.setPassword(hash);
 		administratorService.insert(administrator);
 		return "redirect:/";
 	}
@@ -113,11 +127,19 @@ public class AdministratorController {
 	 */
 	@RequestMapping("/login")
 	public String login(LoginForm form, BindingResult result, Model model) {
-		Administrator administrator = administratorService.login(form.getMailAddress(), form.getPassword());
+		Administrator administrator = administratorService.login(form.getMailAddress());
 		if (administrator == null) {
 			model.addAttribute("errorMessage", "メールアドレスまたはパスワードが不正です。");
 			return toLogin();
 		}
+
+		// パスワードチェック
+		if(!(passwordEncoder.matches(form.getPassword(), administrator.getPassword()))) {
+			model.addAttribute("errorMessage", "メールアドレスまたはパスワードが不正です。");
+			return toLogin();
+		}
+		System.out.println(administrator.getPassword());
+
 		return "forward:/employee/showList";
 	}
 	
